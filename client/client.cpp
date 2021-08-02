@@ -3,13 +3,15 @@
 #include <ws2tcpip.h>
 
 
-int connect(int code)
+session *sess;
+
+int connect(int code, HINSTANCE hInstance)
 {
 	HANDLE window;
-	CryptoContainer cc;
 	WSADATA wsad;
+	session s;
 
-	if (cryptoInitToAES(&cc)) {
+	if (cryptoInitToAES2(s.cc)) {
 		return -1;
 	}
 
@@ -22,14 +24,19 @@ int connect(int code)
 	return 0;
 }
 
-int _send(int code, char ^ msg)
+int createClient(int code, char * userName, HINSTANCE hInstance)
 {
-	HANDLE mm = NULL;
-	if (mm == NULL) {
-		mm = CreateMutex(NULL, FALSE, NULL);
-	}
+	static session ses;
 
 
+
+
+	return 0;
+}
+
+int _send(int code, char *msg)
+{
+	
 
 	return 0;
 }

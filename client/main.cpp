@@ -1,7 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "pch.h"
 #include "client.h"
-#include "../server_login/connection.h"
 
 
 
@@ -220,7 +219,7 @@ int main()
 		return -1;
 	}
 
-	if (SOCKET_ERROR == (connect(soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect, (soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -399,7 +398,7 @@ DWORD WINAPI listen(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -479,7 +478,7 @@ DWORD WINAPI listen2(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -551,7 +550,7 @@ DWORD WINAPI virtualUser(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);

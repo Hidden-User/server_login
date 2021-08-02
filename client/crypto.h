@@ -14,10 +14,23 @@ struct CryptoContainer
 	HCRYPTHASH hHash;
 };
 
+public value class CryptoContainer2 {
+public:
+	HCRYPTPROV hProv;
+	HCRYPTHASH hHash;
+
+	void setHPROV(HCRYPTPROV hpr) {
+		this->hProv = hpr;
+	}
+
+};
+
+
 // init crypto 
 int cryptoInitToMD5(CryptoContainer *cc);
 
 int cryptoInitToAES(CryptoContainer *cc);
+int cryptoInitToAES2(CryptoContainer2 ^cc);
 
 // encript string to MD5
 int encryptPasswordMD5(char *rs, char *ins, CryptoContainer *cc);
