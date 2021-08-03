@@ -767,9 +767,8 @@ VOID WINAPI _user2(PTP_CALLBACK_INSTANCE, LPVOID lpUF) {
 
 			if (uf->chat == ib) {
 				// leave
-				uf->chat++;
 
-				sprintf(buffer, "User: '%s' leave from room %d\n", user.name, uf->chat);
+				sprintf(buffer, "User: '%s' leave from room %d\n", user.name, uf->chat + 1);
 
 				share(suf, uf->chat);
 

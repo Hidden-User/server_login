@@ -4,14 +4,8 @@
 
 
 
-#include <WinSock2.h>
-#include <ws2tcpip.h>
-
-
 #pragma comment (lib, "ws2_32.lib")
 
-const char server_addr[] = "127.0.0.1";
-const char server_port[] = "49999";
 const char uc[] = "It is not a command!";
 char buffer[1024];
 
@@ -93,58 +87,12 @@ void createWindow() {
 DWORD WINAPI wndThread(LPVOID);
 DWORD WINAPI sendToServer(LPVOID);
 
-[System::STAThread]
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-
-	const wchar_t wcn[] = L"Client";
-	const wchar_t wn[] = L"Client";
-	int wW = 1280;
-	int wH = 800;
-
-	::WNDCLASS wndcl;
-	wndcl.style = CS_VREDRAW | CS_HREDRAW;
-	wndcl.lpfnWndProc = &wndProc;
-	wndcl.cbClsExtra = 0;
-	wndcl.cbWndExtra = 0;
-	wndcl.hInstance = hInstance;
-	wndcl.hIcon = NULL;
-	wndcl.hCursor = NULL;
-	wndcl.hbrBackground = reinterpret_cast <HBRUSH> (COLOR_BTNFACE + 1);
-	wndcl.lpszMenuName = NULL;
-	wndcl.lpszClassName = wcn;
-	::RegisterClass(&wndcl);
-
-
-
-	HWND mainWindow = ::CreateWindow(
-		wcn,
-		wn,
-		0,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		wW,
-		wH,
-		NULL,
-		NULL,
-		hInstance,
-		0);
-
-	::ShowWindow(mainWindow, SW_SHOW);
-
-	::MSG message;
-	while (::GetMessageA(&message, 0, 0, 0)) {
-		switch (message.message) {
-		case WM_QUIT:
-			break;
-		default:
-			::TranslateMessage(&message);
-			::DispatchMessage(&message);
-			break;
-		}
-	}
-	return 0;
-
-}
+//[System::STAThread]
+//int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+//
+//	client(0, NULL, hInstance);
+//
+//}
 
 
 int main()
@@ -159,214 +107,224 @@ int main()
 	addrinfo *ai, _ai;
 	bool _work = false;
 
-	window = CreateThread(NULL, 0, wndThread, NULL, NULL, &window_id);
+	Client^ cl = gcnew Client();
 
-	if (cryptoInitToAES(&cc)) {
-		printf("Crypt init error\n");
-		Sleep(10000);
-		return -1;
-	}
+	cl->Start();
 
-	if (FAILED(WSAStartup(0x0202, &wsad))) {
-		printf("WSAStartup error\n");
-		Sleep(10000);
-		return -1;
-	}
-
-	g_m = CreateMutex(NULL, FALSE, NULL);
-
-	if (g_m == NULL)
+	while (true)
 	{
-		printf("CreateMutex error: %d\n", GetLastError());
-		Sleep(10000);
-		exit(-1);
+
 	}
 
-	//for (int t = 0; t < 1500; t++) {
-	//	v_users[t] = CreateThread(NULL, 1024, virtualUser, NULL, 0, &(v_thr_id[t]));
-	//	
-	//	Sleep(20);
-	//
-	//	if (v_users[t] == 0) {
-	//		printf("Create thread error %d", GetLastError());
-	//		return 1;
-	//		//Sleep(10000);
-	//	}
+
+	//window = CreateThread(NULL, 0, wndThread, NULL, NULL, &window_id);
+
+	//if (cryptoInitToAES(&cc)) {
+	//	printf("Crypt init error\n");
+	//	Sleep(10000);
+	//	return -1;
 	//}
-	if (WaitForSingleObject(g_m, INFINITE) != WAIT_OBJECT_0) {
-		Sleep(10000);
-		exit(-1);
-	}
-	ZeroMemory(&_ai, sizeof(_ai));
-	_ai.ai_family = AF_INET;
-	_ai.ai_socktype = SOCK_STREAM;
-	_ai.ai_protocol = IPPROTO_TCP;
 
-	ib = getaddrinfo(server_addr, server_port, &_ai, &ai);
+	//if (FAILED(WSAStartup(0x0202, &wsad))) {
+	//	printf("WSAStartup error\n");
+	//	Sleep(10000);
+	//	return -1;
+	//}
 
-	if (ib != 0) {
-		printf("getaddrinfo rc: %d", ib);
-		WSACleanup();
-		return 0;
-	}
+	//g_m = CreateMutex(NULL, FALSE, NULL);
 
-	soc = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+	//if (g_m == NULL)
+	//{
+	//	printf("CreateMutex error: %d\n", GetLastError());
+	//	Sleep(10000);
+	//	exit(-1);
+	//}
 
-	if (soc == INVALID_SOCKET) {
-		ib = WSAGetLastError();
-		printf("socket rc: %d", ib);
-		Sleep(100000);
-		return -1;
-	}
+	////for (int t = 0; t < 1500; t++) {
+	////	v_users[t] = CreateThread(NULL, 1024, virtualUser, NULL, 0, &(v_thr_id[t]));
+	////	
+	////	Sleep(20);
+	////
+	////	if (v_users[t] == 0) {
+	////		printf("Create thread error %d", GetLastError());
+	////		return 1;
+	////		//Sleep(10000);
+	////	}
+	////}
+	//if (WaitForSingleObject(g_m, INFINITE) != WAIT_OBJECT_0) {
+	//	Sleep(10000);
+	//	exit(-1);
+	//}
+	//ZeroMemory(&_ai, sizeof(_ai));
+	//_ai.ai_family = AF_INET;
+	//_ai.ai_socktype = SOCK_STREAM;
+	//_ai.ai_protocol = IPPROTO_TCP;
 
-	if (SOCKET_ERROR == (connect, (soc, ai->ai_addr, (int)ai->ai_addrlen))) {
-		printf("Internal error");
-		ib = WSAGetLastError();
-		printf("connect rc: %d", ib);
-		Sleep(100000);
-		return -1;
-	}
+	//ib = getaddrinfo(server_addr, server_port, &_ai, &ai);
 
-	ib = SERVER_SET_CONNECTION;
-	ib = send(soc, (char*)&ib, sizeof(int), 0);
+	//if (ib != 0) {
+	//	printf("getaddrinfo rc: %d", ib);
+	//	WSACleanup();
+	//	return 0;
+	//}
 
-	//printf("%d\n");
+	//soc = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
 
-	recv(soc, (char*)&ib, sizeof(int), 0);
+	//if (soc == INVALID_SOCKET) {
+	//	ib = WSAGetLastError();
+	//	printf("socket rc: %d", ib);
+	//	Sleep(100000);
+	//	return -1;
+	//}
 
-	if (ib != USER_OK) {
+	//if (SOCKET_ERROR == (connect(soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	//	printf("Internal error");
+	//	ib = WSAGetLastError();
+	//	printf("connect rc: %d", ib);
+	//	Sleep(100000);
+	//	return -1;
+	//}
 
-	}
+	//ib = SERVER_SET_CONNECTION;
+	//ib = send(soc, (char*)&ib, sizeof(int), 0);
 
-	_work = true;
-	if (!ReleaseMutex(g_m)) {
-		Sleep(10000);
-		exit(-1);
-	}
-	while (_work)
-	{
-		//scanf_s("%s", cb, sizeof(cb));
-		gets_s(cb, sizeof(cb));
-		if (strcmp(cb, "/exit") == 0) {
-			closesocket(soc);
-			WSACleanup();
-			return 0;
-		}
-		if (strcmp(cb, "/login") == 0) {
-			if (my_id != 0) {
-				printf("you logged!\n");
-			}
-			scanf_s("%s", cb, sizeof(cb));
-			sprintf(mst.name, "%s", cb);
-			scanf_s("%s", cb, sizeof(cb));
-			getchar();
-			sprintf(mst.pass, "%s", cb);
-			//encryptPasswordMD5(mst.pass, cb, &cc);
+	////printf("%d\n");
 
-			ib = SERVER_LOGIN;
+	//recv(soc, (char*)&ib, sizeof(int), 0);
 
-			send(soc, (char*)&ib, sizeof(int), 0);
+	//if (ib != USER_OK) {
 
-			//memcpy(buffer, &mst, sizeof(MyStruct));
-			encryptSession((BYTE*)buffer, (char*)&mst, sizeof(MyStruct), &cc);
-			send(soc, buffer, sizeof(MyStruct) + 16, 0);
+	//}
 
-			recv(soc, (char*)&ib, sizeof(int), 0);
+	//_work = true;
+	//if (!ReleaseMutex(g_m)) {
+	//	Sleep(10000);
+	//	exit(-1);
+	//}
+	//while (_work)
+	//{
+	//	//scanf_s("%s", cb, sizeof(cb));
+	//	gets_s(cb, sizeof(cb));
+	//	if (strcmp(cb, "/exit") == 0) {
+	//		closesocket(soc);
+	//		WSACleanup();
+	//		return 0;
+	//	}
+	//	if (strcmp(cb, "/login") == 0) {
+	//		if (my_id != 0) {
+	//			printf("you logged!\n");
+	//		}
+	//		scanf_s("%s", cb, sizeof(cb));
+	//		sprintf(mst.name, "%s", cb);
+	//		scanf_s("%s", cb, sizeof(cb));
+	//		getchar();
+	//		sprintf(mst.pass, "%s", cb);
+	//		//encryptPasswordMD5(mst.pass, cb, &cc);
 
-			if (ib == USER_LOGIN_SUCCES) {
-				recv(soc, (char*)&my_id, sizeof(int), 0);
-				listener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)listen, NULL, 0, &thr_id);
-				printf("login success\n");
-			}
-			else {
-				printf("login deny\n");
-			}
+	//		ib = SERVER_LOGIN;
 
+	//		send(soc, (char*)&ib, sizeof(int), 0);
 
-			continue;
-		}
-		if (strcmp(cb, "/logout") == 0) {
-			if (my_id == 0) {
-				continue;
-			}
+	//		//memcpy(buffer, &mst, sizeof(MyStruct));
+	//		encryptSession((BYTE*)buffer, (char*)&mst, sizeof(MyStruct), &cc);
+	//		send(soc, buffer, sizeof(MyStruct) + 16, 0);
 
-			ib = SERVER_LOGOUT;
+	//		recv(soc, (char*)&ib, sizeof(int), 0);
 
-			send(soc, (char*)&ib, sizeof(int), 0);
-
-			recv(soc, (char*)&ib, sizeof(int), 0);
-
-			if (ib != USER_OK) {
-				printf("logout error\n");
-			}
-
-			my_id = 0;
-
-			CloseHandle(listener);
-
-			continue;
-		}
-		if (strcmp(cb, "/reg") == 0) {
-			if (my_id != 0) {
-				printf("you logged!\n");
-			}
-			scanf_s("%s", cb, sizeof(cb));
-			sprintf(mst.name, "%s", cb);
-			scanf_s("%s", cb, sizeof(cb));
-			getchar();
-			sprintf(mst.pass, "%s", cb);
-			//encryptPasswordMD5(mst.pass, cb, &cc);
-
-			ib = SERVER_REGISTER;
-
-			send(soc, (char*)&ib, sizeof(int), 0);
-
-			encryptSession((BYTE*)buffer, (char*)&mst, sizeof(MyStruct), &cc);
-			send(soc, buffer, sizeof(MyStruct) + 16, 0);
-
-			recv(soc, (char*)&ib, sizeof(int), 0);
-
-			if (ib == USER_REGISTER_SUCCESS) {
-				recv(soc, (char*)&my_id, sizeof(int), 0);
-				listener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)listen, NULL, 0, &thr_id);
-				printf("register success\n");
-			}
-			else {
-				printf("register deny\n");
-			}
+	//		if (ib == USER_LOGIN_SUCCES) {
+	//			recv(soc, (char*)&my_id, sizeof(int), 0);
+	//			listener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)listen, NULL, 0, &thr_id);
+	//			printf("login success\n");
+	//		}
+	//		else {
+	//			printf("login deny\n");
+	//		}
 
 
-			continue;
-		}
+	//		continue;
+	//	}
+	//	if (strcmp(cb, "/logout") == 0) {
+	//		if (my_id == 0) {
+	//			continue;
+	//		}
 
-		if (my_id == 0) {
-			printf("You not logged!\n");
-			continue;
-		}
+	//		ib = SERVER_LOGOUT;
 
-		ib = SERVER_MESSAGE;
+	//		send(soc, (char*)&ib, sizeof(int), 0);
 
-		send(soc, (char*)&ib, sizeof(int), 0);
+	//		recv(soc, (char*)&ib, sizeof(int), 0);
 
-		ib = strlen(cb) + 1;
+	//		if (ib != USER_OK) {
+	//			printf("logout error\n");
+	//		}
 
-		send(soc, (char*)&ib, sizeof(int), 0);
+	//		my_id = 0;
 
-		send(soc, cb, ib, 0);
+	//		CloseHandle(listener);
 
-		recv(soc, (char*)&ib, sizeof(int), 0);
+	//		continue;
+	//	}
+	//	if (strcmp(cb, "/reg") == 0) {
+	//		if (my_id != 0) {
+	//			printf("you logged!\n");
+	//		}
+	//		scanf_s("%s", cb, sizeof(cb));
+	//		sprintf(mst.name, "%s", cb);
+	//		scanf_s("%s", cb, sizeof(cb));
+	//		getchar();
+	//		sprintf(mst.pass, "%s", cb);
+	//		//encryptPasswordMD5(mst.pass, cb, &cc);
 
-		if (ib != USER_OK) {
+	//		ib = SERVER_REGISTER;
 
-		}
+	//		send(soc, (char*)&ib, sizeof(int), 0);
 
-	}
+	//		encryptSession((BYTE*)buffer, (char*)&mst, sizeof(MyStruct), &cc);
+	//		send(soc, buffer, sizeof(MyStruct) + 16, 0);
 
-	if (listener != NULL) {
-		CloseHandle(listener);
-	}
+	//		recv(soc, (char*)&ib, sizeof(int), 0);
 
-	cryptoRelease(&cc);
+	//		if (ib == USER_REGISTER_SUCCESS) {
+	//			recv(soc, (char*)&my_id, sizeof(int), 0);
+	//			listener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)listen, NULL, 0, &thr_id);
+	//			printf("register success\n");
+	//		}
+	//		else {
+	//			printf("register deny\n");
+	//		}
+
+
+	//		continue;
+	//	}
+
+	//	if (my_id == 0) {
+	//		printf("You not logged!\n");
+	//		continue;
+	//	}
+
+	//	ib = SERVER_MESSAGE;
+
+	//	send(soc, (char*)&ib, sizeof(int), 0);
+
+	//	ib = strlen(cb) + 1;
+
+	//	send(soc, (char*)&ib, sizeof(int), 0);
+
+	//	send(soc, cb, ib, 0);
+
+	//	recv(soc, (char*)&ib, sizeof(int), 0);
+
+	//	if (ib != USER_OK) {
+
+	//	}
+
+	//}
+
+	//if (listener != NULL) {
+	//	CloseHandle(listener);
+	//}
+
+	//cryptoRelease(&cc);
 }
 
 DWORD WINAPI listen(LPVOID) {
@@ -398,7 +356,7 @@ DWORD WINAPI listen(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -478,7 +436,7 @@ DWORD WINAPI listen2(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -550,7 +508,7 @@ DWORD WINAPI virtualUser(LPVOID) {
 		exit(-1);
 	}
 
-	if (SOCKET_ERROR == (connect, (_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
+	if (SOCKET_ERROR == (connect(_soc, ai->ai_addr, (int)ai->ai_addrlen))) {
 		printf("Internal error");
 		ib = WSAGetLastError();
 		printf("connect rc: %d", ib);
@@ -618,7 +576,6 @@ DWORD WINAPI wndThread(LPVOID) {
 	return 0;
 }
 
-#define SKIPDWP res = DefWindowProc(hWnd, message, wParam, lParam);
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

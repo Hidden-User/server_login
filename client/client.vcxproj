@@ -175,8 +175,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\server_login\connection.h" />
     <ClInclude Include="client.h" />
+    <ClInclude Include="connection.h" />
     <ClInclude Include="crypto.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
